@@ -13,6 +13,7 @@
 
 #include <cufftXt.h>
 #include <cuda_fp16.h>
+#include <cuda_bf16.h>
 
 
 #include "FFT_clases.h"
@@ -244,6 +245,71 @@ double stdev(std::vector<double> *times, double mean_time){
 // ***********************************************************************************
 // ***********************************************************************************
 // ***********************************************************************************
+
+
+int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+	int error;
+	//---------> Initial nVidia stuff
+	error = Initiate_device(device);
+	if(error!=0) return(1);
+	
+	error = Check_free_memory(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size);
+	if(error!=0) return(1);
+
+	//---------> Measurements
+	double FFT_execution_time = 0, FFT_transfer_time = 0, dtemp = 0;
+	GpuTimer timer;
+	
+	//---------> Memory
+	FFT_Memory<nv_bfloat162> FFT_mem;
+	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
+	FFT_mem.Generate_data_host_half(FFT_size.input_nElements);
+	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
+	
+	
+	//------------------------------------------------------------
+	//---------> cuFFT
+	cufftHandle plan;
+	cufftResult cuFFT_error;
+	cuFFT_error = cufftCreate(&plan);
+	if (CUFFT_SUCCESS != cuFFT_error) {printf("Error %d in cufftCreate()\n", cuFFT_error); return(1);}
+	long long int rank = 1;
+	long long int n[1]; n[0]=FFT_lengths.Nx;
+	long long int nembed[1]; nembed[0]=FFT_lengths.Nx;
+	long long int stride = 1;
+	long long int dist = FFT_lengths.Nx;
+	size_t workSize = 0;
+	cuFFT_error = cufftXtMakePlanMany(plan, rank, n, nembed, stride, dist, CUDA_C_16BF, nembed, stride, dist, CUDA_C_16BF, nFFTs, &workSize, CUDA_C_16BF);
+	if (CUFFT_SUCCESS != cuFFT_error) {printf("Error %d in cufftXtMakePlanMany()\n", cuFFT_error); return(1);}
+	std::vector<double> times;
+	if (CUFFT_SUCCESS == cuFFT_error) {
+		for(int f=0; f<nRuns; f++){
+			if(HOST_TO_DEVICE==1) FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &dtemp);
+			timer.Start();
+			//--------------------------------> cuFFT execution
+			cuFFT_error = cufftXtExec(plan, FFT_mem.d_input, FFT_mem.d_output, CUFFT_FORWARD);
+			if (CUFFT_SUCCESS != cuFFT_error) {printf("Error %d in cufftXtExec()\n", cuFFT_error); return(1);}
+			timer.Stop();
+			times.push_back(timer.Elapsed());
+			FFT_execution_time += timer.Elapsed();
+		}
+		FFT_execution_time = FFT_execution_time/((double) nRuns);
+	}
+	else printf("CUFFT error: Plan creation failed");
+	
+	cufftDestroy(plan);
+	//------------------------------------------------------------<
+	
+	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
+	#ifdef EXPORT
+		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths);
+	#endif 
+	*execution_time = FFT_execution_time; *transfer_time = FFT_transfer_time; *standard_deviation = stdev(&times, FFT_execution_time);
+	
+	//---------> error check -----
+	checkCudaErrors(cudaGetLastError());
+	return(0);
+}
 
 int cuFFT_1D_C2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
 	int error;
