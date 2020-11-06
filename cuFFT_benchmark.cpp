@@ -31,8 +31,8 @@ void Generate_signal_noise(float2 *h_input, int N, int nFFTs){
 
 
 int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time);
-int cuFFT_1D_R2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time);
-int cuFFT_1D_C2R_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time);
+//int cuFFT_1D_R2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time);
+//int cuFFT_1D_C2R_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time);
 int cuFFT_1D_C2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time);
 int cuFFT_1D_R2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time);
 int cuFFT_1D_C2R_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time);
