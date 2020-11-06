@@ -107,6 +107,26 @@ public:
 		printf("Finished\n");
 		return(0);
 	}
+
+	int Generate_data_host_bfloat16(size_t input_nElements){
+		srand(time(NULL));
+		#ifdef EXPORT
+			float f1,f2,a1,a2;
+			f1=1.0/8.0; f2=2.0/8.0; a1=1.0; a2=0.5;
+	
+			for(size_t f=0; f<input_nElements; f++) {
+				h_input[f].x = __float2bfloat16(a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0);
+				h_input[f].y = __float2bfloat16(0.0);
+			}
+		#else
+			for(size_t f=0; f<input_nElements; f++) {
+				h_input[f].x = __float2bfloat16(rand()/(float)RAND_MAX);
+				h_input[f].y = __float2bfloat16(0.0);
+			}
+		#endif
+		printf("Finished\n");
+		return(0);
+	}
 	
 	int Generate_data_device(){
 		return(0);
@@ -263,7 +283,7 @@ int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	//---------> Memory
 	FFT_Memory<nv_bfloat162> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_host_half(FFT_size.input_nElements);
+	FFT_mem.Generate_data_host_bfloat16(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
