@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
 		printf("Nz = %d;\n", Nz);
 		printf("Number of FFTs: %d;\n", nFFTs);
 		printf("Number of runs: %d;\n", nRuns);
-		printf("Precision: "); if(FFT_precision==FFT_PRECISION_DOUBLE) printf("double;\n"); else if(FFT_precision==FFT_PRECISION_FLOAT) printf("single;\n"); else  if(FFT_precision==FFT_PRECISION_HALF) printf("half;\n"); else printf("unknown;\n");
+		printf("Precision: "); if(input_precision=='d') printf("double;\n"); else if(input_precision=='f') printf("single;\n"); else  if(input_precision=='h') printf("half;\n");else  if(input_precision=='b') printf("bfloat16;\n"); else printf("unknown;\n");
 		printf("FFT type: "); if(FFT_type==FFT_TYPE_C2C) printf("complex-to-complex;\n"); else if(FFT_type==FFT_TYPE_R2C) printf("real-to-complex;\n"); else if(FFT_type==FFT_TYPE_C2R) printf("complex-to-real;\n");
 		printf("Device: %d;\n", device);
 		printf("----------\n");
