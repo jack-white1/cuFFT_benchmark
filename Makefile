@@ -1,8 +1,3 @@
-export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}
-export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64{LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
-export CUDA_HOME=/usr/local/cuda
-
-
 INC := -I${CUDA_HOME}/include
 LIB := -L${CUDA_HOME}/lib64 -lcudart -lcuda -lcufft
 
