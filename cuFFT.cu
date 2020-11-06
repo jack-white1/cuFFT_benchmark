@@ -169,7 +169,10 @@ public:
 		return(0);
 	}
 	
-	
+	void writeout(nv_bfloat162 value, std::ofstream &FILEOUT) {
+		FILEOUT << (double) __bfloat162float(value.x) << " " << (double) __bfloat162float(value.y) << std::endl;
+	}
+
 	void writeout(half2 value, std::ofstream &FILEOUT) {
 		FILEOUT << (double) __half2float(value.x) << " " << (double) __half2float(value.y) << std::endl;
 	}
@@ -180,6 +183,14 @@ public:
 	
 	void writeout(double2 value, std::ofstream &FILEOUT) {
 		FILEOUT << (double) value.x << " " << (double) value.y << std::endl;
+	}
+	
+	void writeout(nv_bfloat16 value, std::ofstream &FILEOUT) {
+		FILEOUT << (double) __bfloat162float(value) << std::endl;
+	}
+	
+	void writeout(half value, std::ofstream &FILEOUT) {
+		FILEOUT << (double) __half2float(value) << std::endl;
 	}
 	
 	void writeout(float value, std::ofstream &FILEOUT) {
