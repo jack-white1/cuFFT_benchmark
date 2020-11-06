@@ -86,6 +86,9 @@ int main(int argc, char* argv[]) {
 	int nFFTs = strtol(argv[4],&pEnd,10);
 	int nRuns = strtol(argv[5],&pEnd,10);
 	int device = strtol(argv[8],&pEnd,10);
+	cudaDeviceProp prop;
+	cudaGetDeviceProperties(&prop,device);
+	printf("  %s\n",prop.name);
 	char input_precision = '0';
 	if (strlen(argv[6])!=1) {
 		printf("ERROR: Argument numerical precision is too long\n");
