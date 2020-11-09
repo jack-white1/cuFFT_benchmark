@@ -1,3 +1,4 @@
+import os
 import subprocess
 FNULL = open(os.devnull, 'w')
 config =  "1024 0 0 1 10 f C2C 0"
