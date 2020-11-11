@@ -205,7 +205,7 @@ public:
 		FILEOUT << (double) value << std::endl;
 	}
 	
-	int Export_fft_result(FFT_Configuration fft_config, FFT_Lengths fft_params, char precision_type = "f"){
+	int Export_fft_result(FFT_Configuration fft_config, FFT_Lengths fft_params, const char precision_type = "f"){
 		char str[200];
 		sprintf(str,"fft_result_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
 		if(precision_type == "b") {sprintf(str,"%s_b",str);}
@@ -235,7 +235,7 @@ public:
 	}
 	
 	
-	int Export_fft_input(FFT_Configuration fft_config, FFT_Lengths fft_params, char precision_type = "f"){
+	int Export_fft_input(FFT_Configuration fft_config, FFT_Lengths fft_params, const char precision_type = "f"){
 		char str[200];
 		sprintf(str,"fft_input_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
 		if(precision_type == "b") {sprintf(str,"%s_b",str);}
@@ -368,7 +368,7 @@ int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	cufftDestroy(plan);
 	//------------------------------------------------------------<
 	
-	char precision_type = "b";
+	const char precision_type = "b";
 	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
 	#ifdef EXPORT
 		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths, precision_type);
@@ -433,7 +433,7 @@ int cuFFT_1D_R2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	
 	cufftDestroy(plan);
 	//------------------------------------------------------------<
-	char precision_type = "b";
+	const char precision_type = "b";
 	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
 	#ifdef EXPORT
 		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths, precision_type);
@@ -499,7 +499,7 @@ int cuFFT_1D_C2R_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	
 	cufftDestroy(plan);
 	//------------------------------------------------------------<
-	char precision_type = "b";
+	const char precision_type = "b";
 	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
 	#ifdef EXPORT
 		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths, precision_type);
