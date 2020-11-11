@@ -368,7 +368,7 @@ int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	cufftDestroy(plan);
 	//------------------------------------------------------------<
 	
-	const char precision_type = "b";
+	const char precision_type = 'b';
 	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
 	#ifdef EXPORT
 		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths, precision_type);
@@ -433,7 +433,7 @@ int cuFFT_1D_R2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	
 	cufftDestroy(plan);
 	//------------------------------------------------------------<
-	const char precision_type = "b";
+	const char precision_type = 'b';
 	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
 	#ifdef EXPORT
 		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths, precision_type);
@@ -499,7 +499,7 @@ int cuFFT_1D_C2R_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	
 	cufftDestroy(plan);
 	//------------------------------------------------------------<
-	const char precision_type = "b";
+	const char precision_type = 'b';
 	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
 	#ifdef EXPORT
 		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths, precision_type);
