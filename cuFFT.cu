@@ -205,7 +205,7 @@ public:
 		FILEOUT << (double) value << std::endl;
 	}
 	
-	int Export_fft_result(FFT_Configuration fft_config, FFT_Lengths fft_params, const char precision_type = "f"){
+	int Export_fft_result(FFT_Configuration fft_config, FFT_Lengths fft_params, const char precision_type = 'f'){
 		char str[200];
 		sprintf(str,"fft_result_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
 		if(precision_type == "b") {sprintf(str,"%s_b",str);}
@@ -235,7 +235,7 @@ public:
 	}
 	
 	
-	int Export_fft_input(FFT_Configuration fft_config, FFT_Lengths fft_params, const char precision_type = "f"){
+	int Export_fft_input(FFT_Configuration fft_config, FFT_Lengths fft_params, const char precision_type = 'f'){
 		char str[200];
 		sprintf(str,"fft_input_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
 		if(precision_type == "b") {sprintf(str,"%s_b",str);}
