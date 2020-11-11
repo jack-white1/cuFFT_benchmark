@@ -205,12 +205,15 @@ public:
 		FILEOUT << (double) value << std::endl;
 	}
 	
-	int Export_fft_result(FFT_Configuration fft_config, FFT_Lengths fft_params){
+	int Export_fft_result(FFT_Configuration fft_config, FFT_Lengths fft_params, char precision_type = "f"){
 		char str[200];
 		sprintf(str,"fft_result_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
-		if(fft_config.FFT_precision==FFT_PRECISION_DOUBLE) sprintf(str,"%s_d",str);
-		if(fft_config.FFT_precision==FFT_PRECISION_FLOAT) sprintf(str,"%s_f",str);
-		if(fft_config.FFT_precision==FFT_PRECISION_HALF) sprintf(str,"%s_h",str);
+		if(precision_type == "b") {sprintf(str,"%s_b",str);}
+		else {
+			if(fft_config.FFT_precision==FFT_PRECISION_DOUBLE) sprintf(str,"%s_d",str);
+			if(fft_config.FFT_precision==FFT_PRECISION_FLOAT) sprintf(str,"%s_f",str);
+			if(fft_config.FFT_precision==FFT_PRECISION_HALF) sprintf(str,"%s_h",str);
+			}
 		if(fft_config.FFT_type==FFT_TYPE_C2C) sprintf(str,"%s_C2C.dat",str);
 		if(fft_config.FFT_type==FFT_TYPE_R2C) sprintf(str,"%s_R2C.dat",str);
 		if(fft_config.FFT_type==FFT_TYPE_C2R) sprintf(str,"%s_C2R.dat",str);
@@ -232,12 +235,15 @@ public:
 	}
 	
 	
-	int Export_fft_input(FFT_Configuration fft_config, FFT_Lengths fft_params){
+	int Export_fft_input(FFT_Configuration fft_config, FFT_Lengths fft_params, char precision_type = "f"){
 		char str[200];
 		sprintf(str,"fft_input_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
-		if(fft_config.FFT_precision==FFT_PRECISION_DOUBLE) sprintf(str,"%s_d",str);
-		if(fft_config.FFT_precision==FFT_PRECISION_FLOAT) sprintf(str,"%s_f",str);
-		if(fft_config.FFT_precision==FFT_PRECISION_HALF) sprintf(str,"%s_h",str);
+		if(precision_type == "b") {sprintf(str,"%s_b",str);}
+		else {
+			if(fft_config.FFT_precision==FFT_PRECISION_DOUBLE) sprintf(str,"%s_d",str);
+			if(fft_config.FFT_precision==FFT_PRECISION_FLOAT) sprintf(str,"%s_f",str);
+			if(fft_config.FFT_precision==FFT_PRECISION_HALF) sprintf(str,"%s_h",str);
+		}
 		if(fft_config.FFT_type==FFT_TYPE_C2C) sprintf(str,"%s_C2C.dat",str);
 		if(fft_config.FFT_type==FFT_TYPE_R2C) sprintf(str,"%s_R2C.dat",str);
 		if(fft_config.FFT_type==FFT_TYPE_C2R) sprintf(str,"%s_C2R.dat",str);
@@ -362,10 +368,11 @@ int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	cufftDestroy(plan);
 	//------------------------------------------------------------<
 	
+	char precision_type = "b"
 	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
 	#ifdef EXPORT
-		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths);
-		FFT_mem.Export_fft_input(FFT_conf, FFT_lengths);
+		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths, precision_type);
+		FFT_mem.Export_fft_input(FFT_conf, FFT_lengths, precision_type);
 	#endif 
 	*execution_time = FFT_execution_time; *transfer_time = FFT_transfer_time; *standard_deviation = stdev(&times, FFT_execution_time);
 	
@@ -429,8 +436,8 @@ int cuFFT_1D_R2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	
 	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
 	#ifdef EXPORT
-		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths);
-		FFT_mem.Export_fft_input(FFT_conf, FFT_lengths);
+		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths, precision_type);
+		FFT_mem.Export_fft_input(FFT_conf, FFT_lengths, precision_type);
 		
 	#endif 
 	*execution_time = FFT_execution_time; *transfer_time = FFT_transfer_time; *standard_deviation = stdev(&times, FFT_execution_time);
@@ -495,8 +502,8 @@ int cuFFT_1D_C2R_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	
 	FFT_mem.Transfer_output(FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace, &FFT_transfer_time);
 	#ifdef EXPORT
-		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths);
-		FFT_mem.Export_fft_input(FFT_conf, FFT_lengths);
+		FFT_mem.Export_fft_result(FFT_conf, FFT_lengths, precision_type);
+		FFT_mem.Export_fft_input(FFT_conf, FFT_lengths, precision_type);
 	#endif
 	*execution_time = FFT_execution_time; *transfer_time = FFT_transfer_time; *standard_deviation = stdev(&times, FFT_execution_time);
 	
