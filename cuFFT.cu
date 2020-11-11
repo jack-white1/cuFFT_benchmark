@@ -207,7 +207,7 @@ public:
 	
 	int Export_fft_result(FFT_Configuration fft_config, FFT_Lengths fft_params, const char precision_type = 'f'){
 		char str[200];
-		sprintf(str,"fft_result_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
+		sprintf(str,"data/fft_result_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
 		if(precision_type == 'b') {sprintf(str,"%s_b",str);}
 		else {
 			if(fft_config.FFT_precision==FFT_PRECISION_DOUBLE) sprintf(str,"%s_d",str);
@@ -237,7 +237,7 @@ public:
 	
 	int Export_fft_input(FFT_Configuration fft_config, FFT_Lengths fft_params, const char precision_type = 'f'){
 		char str[200];
-		sprintf(str,"fft_input_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
+		sprintf(str,"data/fft_input_%zu_%zu_%zu", fft_params.Nx, fft_params.Ny, fft_params.Nz);
 		if(precision_type == 'b') {sprintf(str,"%s_b",str);}
 		else {
 			if(fft_config.FFT_precision==FFT_PRECISION_DOUBLE) sprintf(str,"%s_d",str);
