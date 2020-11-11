@@ -72,7 +72,7 @@ public:
 			float f1,f2,a1,a2;
 			f1=1.0/64.0; f2=2.0/8.0; a1=1.0; a2=0.5;
 	
-			for(size_t f=0; f<input_nElements*2; f++) { //the *2 is because it is a complex number, so you need a length thats twice as long
+			for(size_t f=0; f<input_nElements; f++) { //do you need *2 on the for loop because it is a complex number, so you need a length thats twice as long
 				if(f%2==0) {
 					//h_input[f] = a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
 					h_input[f] = a1*sin(2.0*3.141592654*f1*f*0.5);
