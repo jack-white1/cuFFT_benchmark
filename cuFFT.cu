@@ -835,7 +835,7 @@ int cuFFT_1D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	//---------> Memory
 	FFT_Memory<float2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2C_host(FFT_size.input_nElements, FFT_conf.FFT_host_to_device);
+	FFT_mem.Generate_data_C2C_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -890,7 +890,7 @@ int cuFFT_1D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	//---------> Memory
 	FFT_Memory<float2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements, FFT_conf.FFT_host_to_device);
+	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -945,7 +945,7 @@ int cuFFT_1D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	//---------> Memory
 	FFT_Memory<float2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements, FFT_conf.FFT_host_to_device);
+	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -1001,7 +1001,7 @@ int cuFFT_1D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	//---------> Memory
 	FFT_Memory<double2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2C_host(FFT_size.input_nElements, FFT_conf.FFT_host_to_device);
+	FFT_mem.Generate_data_C2C_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -1056,7 +1056,7 @@ int cuFFT_1D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	//---------> Memory
 	FFT_Memory<double2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements, FFT_conf.FFT_host_to_device);
+	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -1111,7 +1111,7 @@ int cuFFT_1D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	//---------> Memory
 	FFT_Memory<double2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements, FFT_conf.FFT_host_to_device);
+	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
