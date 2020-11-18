@@ -99,11 +99,11 @@ public:
 			f1=1.0/8.0; f2=2.0/8.0; a1=1.0; a2=0.5;
 
 			for(size_t f=0; f<input_nElements; f++) {
-				h_input[f].x = a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
+				h_input[f] = a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
 			}
 		#else
 			for(size_t f=0; f<input_nElements; f++){
-				h_input[f].x = rand()/(float)RAND_MAX;
+				h_input[f] = rand()/(float)RAND_MAX;
 			}
 		#endif
 		return(0);
@@ -112,7 +112,7 @@ public:
 	int Generate_data_C2R_host(size_t input_nElements){
 		srand(time(NULL));
 		for(size_t f=0; f<input_nElements*2; f++) {
-			h_input[f].x = rand()/(float)RAND_MAX;
+			h_input[f] = rand()/(float)RAND_MAX;
 		}
 		return(0);
 	}
@@ -888,7 +888,7 @@ int cuFFT_1D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	GpuTimer timer;
 	
 	//---------> Memory
-	FFT_Memory<float2> FFT_mem;
+	FFT_Memory<float> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
 	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
@@ -943,7 +943,7 @@ int cuFFT_1D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	GpuTimer timer;
 	
 	//---------> Memory
-	FFT_Memory<float2> FFT_mem;
+	FFT_Memory<float> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
 	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
@@ -1054,7 +1054,7 @@ int cuFFT_1D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	GpuTimer timer;
 	
 	//---------> Memory
-	FFT_Memory<double2> FFT_mem;
+	FFT_Memory<double> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
 	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
@@ -1109,7 +1109,7 @@ int cuFFT_1D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	GpuTimer timer;
 	
 	//---------> Memory
-	FFT_Memory<double2> FFT_mem;
+	FFT_Memory<double> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
 	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
