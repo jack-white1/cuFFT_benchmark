@@ -99,11 +99,11 @@ public:
 			f1=1.0/8.0; f2=2.0/8.0; a1=1.0; a2=0.5;
 
 			for(size_t f=0; f<input_nElements; f++) {
-				h_input[f] = a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
+				h_input[f].x = a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
 			}
 		#else
 			for(size_t f=0; f<input_nElements; f++){
-				h_input[f] = rand()/(float)RAND_MAX;
+				h_input[f].x = rand()/(float)RAND_MAX;
 			}
 		#endif
 		return(0);
@@ -112,7 +112,7 @@ public:
 	int Generate_data_C2R_host(size_t input_nElements){
 		srand(time(NULL));
 		for(size_t f=0; f<input_nElements*2; f++) {
-			h_input[f] = rand()/(float)RAND_MAX;
+			h_input[f].x = rand()/(float)RAND_MAX;
 		}
 		return(0);
 	}
