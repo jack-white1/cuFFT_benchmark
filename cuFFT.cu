@@ -36,6 +36,10 @@ public:
 		d_output = NULL;
 	}
 	
+	float Arbitrary_function(float f1, float f2, float a1, float a2, float f){
+		return a1*sin(2.0*3.141592654*f1*f);
+	}
+
 	int Allocate(size_t total_input_FFT_size, size_t total_output_FFT_size, int FFT_host_to_device, int FFT_inplace){
 		cudaError_t err_code;
 		size_t GPU_input_size = total_input_FFT_size;
@@ -83,7 +87,7 @@ public:
 			f1=1.0/8.0; f2=2.0/8.0; a1=1.0; a2=0.5;
 			for(size_t f=0; f<input_nElements; f++) {
 				//h_input[f].x = a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
-				h_input[f].x = a1*sin(2.0*3.141592654*f1*f);
+				h_input[f].x = Arbitrary_function(f1,f2,a1,a2,f);
 				h_input[f].y = 0;
 			}
 		#else
@@ -103,7 +107,7 @@ public:
 
 			for(size_t f=0; f<input_nElements; f++) {
 				//h_input[f] = a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
-				h_input[f] = a1*sin(2.0*3.141592654*f1*f);
+				h_input[f] = Arbitrary_function(f1,f2,a1,a2,f);
 			}
 		#else
 			for(size_t f=0; f<input_nElements; f++){
@@ -129,7 +133,7 @@ public:
 	
 			for(size_t f=0; f<input_nElements; f++) {
 				//h_input[f].x = __float2half(a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0);
-				h_input[f].x = __float2half(a1*sin(2.0*3.141592654*f1*f));
+				h_input[f].x = __float2half(Arbitrary_function(f1,f2,a1,a2,f));
 				h_input[f].y = __float2half(0.0);
 			}
 		#else
@@ -166,7 +170,7 @@ public:
 	
 			for(size_t f=0; f<input_nElements; f++) {
 				//h_input[f].x = __float2bfloat16(a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0);
-				h_input[f].x = __float2bfloat16(a1*sin(2.0*3.141592654*f1*f));
+				h_input[f].x = __float2bfloat16(Arbitrary_function(f1,f2,a1,a2,f));
 				h_input[f].y = __float2bfloat16(0.0);
 			}
 		#else
