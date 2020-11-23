@@ -16,6 +16,7 @@
 #include "params.h"
 #include "results.h"
 
+#define EXPORT
 
 //-----------------------------------------------
 //---------- Signal generation
