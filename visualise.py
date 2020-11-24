@@ -13,6 +13,7 @@ datatypes = ["d","f","h","b"]
 
 listVals = dict.fromkeys(datatypes)
 absListVals = dict.fromkeys(datatypes)
+sumVals = dict.fromkeys(datatypes)
 
 for datatype in datatypes:
 	data_path = "data/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
@@ -33,18 +34,23 @@ for datatype in datatypes:
 	listVals[datatype]= vals
 	absListVals[datatype] = absVals
 	print("peaks in precision " + datatype + ":" + str(scipy.signal.find_peaks(absVals, height=100)) + "\n")
+	sumVals[datatype] = sum(absVals)
 
-
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 
 fig, axs = plt.subplots(2,2)
 axs[0, 0].plot(absListVals["d"])
 axs[0, 0].set_title('Double')
+axs[0,0].text(0.25, 0.95, "Area under graph: "+str(sumVals["d"]), transform=axs[0,0].transAxes, fontsize=10,verticalalignment='top', bbox=props)
 axs[0, 1].plot(absListVals["f"])
 axs[0, 1].set_title('Float')
+axs[0,1].text(0.25, 0.95, "Area under graph: "+str(sumVals["f"]), transform=axs[0,1].transAxes, fontsize=10,verticalalignment='top', bbox=props)
 axs[1, 0].plot(absListVals["h"])
 axs[1, 0].set_title('Half')
+axs[1,0].text(0.25, 0.95, "Area under graph: "+str(sumVals["h"]), transform=axs[1,0].transAxes, fontsize=10,verticalalignment='top', bbox=props)
 axs[1, 1].plot(absListVals["b"])
 axs[1, 1].set_title('Bfloat16')
+axs[1,1].text(0.25, 0.95, "Area under graph: "+str(sumVals["b"]), transform=axs[1,1].transAxes, fontsize=10,verticalalignment='top', bbox=props)
 
 
 '''
