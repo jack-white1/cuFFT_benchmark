@@ -38,6 +38,7 @@ public:
 	
 	float Arbitrary_function(float f1, float f2, float a1, float a2, float f){
 		return a1*sin(2.0*3.141592654*f1*f);
+		//return a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
 	}
 
 	int Allocate(size_t total_input_FFT_size, size_t total_output_FFT_size, int FFT_host_to_device, int FFT_inplace){
