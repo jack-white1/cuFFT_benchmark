@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <random>
 
 
 #include <cufft.h>
@@ -34,11 +35,16 @@ public:
 		h_output = NULL;
 		d_input = NULL;
 		d_output = NULL;
+
 	}
 	
-	float Arbitrary_function(float f1, float f2, float a1, float a2, float f){
-		return a1*sin(2.0*3.141592654*f1*f);
+	float Arbitrary_function(float f1, float f2, float a1, float a2, float n1, float f){
+		//return a1*sin(2.0*3.141592654*f1*f*0.99123123);
 		//return a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
+		std::random_device rand_dev;
+		std::mt19937 generator(rand_dev());
+		std::normal_distribution<double> distribution(0.0,(float)n1);
+		return (distribution(generator)) + a1*sin(2.0*3.141592654*f1*f);
 	}
 
 	int Allocate(size_t total_input_FFT_size, size_t total_output_FFT_size, int FFT_host_to_device, int FFT_inplace){
@@ -81,14 +87,14 @@ public:
 		return(0);
 	}
 
-	int Generate_data_C2C_host(size_t input_nElements){
+	int Generate_data_C2C_host(size_t input_nElements, int signal_amplitude, int noise_amplitude){
 		srand(time(NULL));
 		#ifdef EXPORT
-			float f1,f2,a1,a2;
-			f1=1.0/8.0; f2=2.0/8.0; a1=1.0; a2=0.5;
+			float f1,f2,a1,a2,n1;
+			f1=1.0/8.0; f2=2.0/8.0; a1=(float)signal_amplitude; a2=0.5; n1=(float)noise_amplitude;
 			for(size_t f=0; f<input_nElements; f++) {
 				//h_input[f].x = a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
-				h_input[f].x = Arbitrary_function(f1,f2,a1,a2,f);
+				h_input[f].x = Arbitrary_function(f1,f2,a1,a2,n1,f);
 				h_input[f].y = 0;
 			}
 		#else
@@ -100,15 +106,15 @@ public:
 		return(0);
 	}
 
-	int Generate_data_R2C_host(size_t input_nElements){
+	int Generate_data_R2C_host(size_t input_nElements, int signal_amplitude, int noise_amplitude){
 		srand(time(NULL));
 		#ifdef EXPORT
-			float f1, f2, a1, a2;
-			f1=1.0/8.0; f2=2.0/8.0; a1=1.0; a2=0.5;
+			float f1, f2, a1, a2, n1;
+			f1=1.0/8.0; f2=2.0/8.0; a1=(float)signal_amplitude; a2=0.5; n1=(float)noise_amplitude;
 
 			for(size_t f=0; f<input_nElements; f++) {
 				//h_input[f] = a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
-				h_input[f] = Arbitrary_function(f1,f2,a1,a2,f);
+				h_input[f] = Arbitrary_function(f1,f2,a1,a2,n1,f);
 			}
 		#else
 			for(size_t f=0; f<input_nElements; f++){
@@ -118,7 +124,7 @@ public:
 		return(0);
 	}
 
-	int Generate_data_C2R_host(size_t input_nElements){
+	int Generate_data_C2R_host(size_t input_nElements, int signal_amplitude, int noise_amplitude){
 		srand(time(NULL));
 		for(size_t f=0; f<input_nElements*2; f++) {
 			h_input[f] = rand()/(float)RAND_MAX;
@@ -126,15 +132,15 @@ public:
 		return(0);
 	}
 
-	int Generate_data_C2C_host_half(size_t input_nElements){
+	int Generate_data_C2C_host_half(size_t input_nElements, int signal_amplitude, int noise_amplitude){
 		srand(time(NULL));
 		#ifdef EXPORT
-			float f1,f2,a1,a2;
-			f1=1.0/8.0; f2=2.0/8.0; a1=1.0; a2=0.5;
+			float f1,f2,a1,a2,n1;
+			f1=1.0/8.0; f2=2.0/8.0; a1=(float)signal_amplitude; a2=0.5; n1=(float)noise_amplitude;
 	
 			for(size_t f=0; f<input_nElements; f++) {
 				//h_input[f].x = __float2half(a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0);
-				h_input[f].x = __float2half(Arbitrary_function(f1,f2,a1,a2,f));
+				h_input[f].x = __float2half(Arbitrary_function(f1,f2,a1,a2,n1,f));
 				h_input[f].y = __float2half(0.0);
 			}
 		#else
@@ -147,7 +153,7 @@ public:
 		return(0);
 	}
 
-	int Generate_data_C2R_host_half(size_t input_nElements){
+	int Generate_data_C2R_host_half(size_t input_nElements, int signal_amplitude, int noise_amplitude){
 		srand(time(NULL));
 		for(size_t f=0; f<input_nElements*2; f++) {
 			h_input[f].x = __float2half(rand()/(float)RAND_MAX);
@@ -155,7 +161,7 @@ public:
 		return(0);
 	}
 
-	int Generate_data_R2C_host_half(size_t input_nElements){
+	int Generate_data_R2C_host_half(size_t input_nElements, int signal_amplitude, int noise_amplitude){
 		srand(time(NULL));
 		for(size_t f=0; f<(input_nElements/2); f++) {
 			h_input[f].x = __float2half(rand()/(float)RAND_MAX);
@@ -163,15 +169,15 @@ public:
 		return(0);
 	}
 	
-	int Generate_data_C2C_host_bfloat16(size_t input_nElements){
+	int Generate_data_C2C_host_bfloat16(size_t input_nElements, int signal_amplitude, int noise_amplitude){
 		srand(time(NULL));
 		#ifdef EXPORT
-			float f1,f2,a1,a2;
-			f1=1.0/8.0; f2=2.0/8.0; a1=1.0; a2=0.5;
+			float f1,f2,a1,a2,n1;
+			f1=1.0/8.0; f2=2.0/8.0; a1=(float)signal_amplitude; a2=0.5; n1=(float)noise_amplitude;
 	
 			for(size_t f=0; f<input_nElements; f++) {
 				//h_input[f].x = __float2bfloat16(a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0);
-				h_input[f].x = __float2bfloat16(Arbitrary_function(f1,f2,a1,a2,f));
+				h_input[f].x = __float2bfloat16(Arbitrary_function(f1,f2,a1,a2,n1,f));
 				h_input[f].y = __float2bfloat16(0.0);
 			}
 		#else
@@ -184,7 +190,7 @@ public:
 		return(0);
 	}
 
-	int Generate_data_C2R_host_bfloat16(size_t input_nElements){
+	int Generate_data_C2R_host_bfloat16(size_t input_nElements, int signal_amplitude, int noise_amplitude){
 		srand(time(NULL));
 		for(size_t f=0; f<input_nElements*2; f++) {
 			h_input[f].x = __float2bfloat16(rand()/(float)RAND_MAX);
@@ -192,7 +198,7 @@ public:
 		return(0);
 	}
 
-	int Generate_data_R2C_host_bfloat16(size_t input_nElements){
+	int Generate_data_R2C_host_bfloat16(size_t input_nElements, int signal_amplitude, int noise_amplitude){
 		srand(time(NULL));
 		for(size_t f=0; f<(input_nElements/2); f++) {
 			h_input[f].x = __float2bfloat16(rand()/(float)RAND_MAX);
@@ -426,7 +432,7 @@ double stdev(std::vector<double> *times, double mean_time){
 // ***********************************************************************************
 
 
-int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -442,7 +448,7 @@ int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	//---------> Memory
 	FFT_Memory<nv_bfloat162> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2C_host_bfloat16(FFT_size.input_nElements);
+	FFT_mem.Generate_data_C2C_host_bfloat16(FFT_size.input_nElements, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -492,7 +498,7 @@ int cuFFT_1D_C2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	return(0);
 }
 
-int cuFFT_1D_R2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_R2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -508,7 +514,7 @@ int cuFFT_1D_R2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	//---------> Memory
 	FFT_Memory<nv_bfloat162> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_R2C_host_bfloat16(FFT_size.input_nElements/2);
+	FFT_mem.Generate_data_R2C_host_bfloat16(FFT_size.input_nElements/2, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -558,7 +564,7 @@ int cuFFT_1D_R2C_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	return(0);
 }
 
-int cuFFT_1D_C2R_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_C2R_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -574,7 +580,7 @@ int cuFFT_1D_C2R_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	//---------> Memory
 	FFT_Memory<nv_bfloat162> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2R_host_bfloat16(FFT_size.input_nElements/2);
+	FFT_mem.Generate_data_C2R_host_bfloat16(FFT_size.input_nElements/2, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -623,7 +629,7 @@ int cuFFT_1D_C2R_bfloat16(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int 
 	return(0);
 }
 
-int cuFFT_1D_C2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_C2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -639,7 +645,7 @@ int cuFFT_1D_C2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int devi
 	//---------> Memory
 	FFT_Memory<half2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2C_host_half(FFT_size.input_nElements);
+	FFT_mem.Generate_data_C2C_host_half(FFT_size.input_nElements, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -699,7 +705,7 @@ int cuFFT_1D_C2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int devi
 	return(0);
 }
 
-int cuFFT_1D_R2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_R2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -715,7 +721,7 @@ int cuFFT_1D_R2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int devi
 	//---------> Memory
 	FFT_Memory<half2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_R2C_host_half(FFT_size.input_nElements/2);
+	FFT_mem.Generate_data_R2C_host_half(FFT_size.input_nElements/2, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -764,7 +770,7 @@ int cuFFT_1D_R2C_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int devi
 	return(0);
 }
 
-int cuFFT_1D_C2R_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_C2R_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -780,7 +786,7 @@ int cuFFT_1D_C2R_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int devi
 	//---------> Memory
 	FFT_Memory<half2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2R_host_half(FFT_size.input_nElements/2);
+	FFT_mem.Generate_data_C2R_host_half(FFT_size.input_nElements/2, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -830,7 +836,7 @@ int cuFFT_1D_C2R_half(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int devi
 }
 
 
-int cuFFT_1D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -846,7 +852,7 @@ int cuFFT_1D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	//---------> Memory
 	FFT_Memory<float2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2C_host(FFT_size.input_nElements);
+	FFT_mem.Generate_data_C2C_host(FFT_size.input_nElements, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -885,7 +891,7 @@ int cuFFT_1D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	return(0);
 }
 
-int cuFFT_1D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -901,7 +907,7 @@ int cuFFT_1D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	//---------> Memory
 	FFT_Memory<float> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements);
+	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -940,7 +946,7 @@ int cuFFT_1D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	return(0);
 }
 
-int cuFFT_1D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -956,7 +962,7 @@ int cuFFT_1D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	//---------> Memory
 	FFT_Memory<float> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements);
+	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -996,7 +1002,7 @@ int cuFFT_1D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 }
 
 
-int cuFFT_1D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1012,7 +1018,7 @@ int cuFFT_1D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	//---------> Memory
 	FFT_Memory<double2> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2C_host(FFT_size.input_nElements);
+	FFT_mem.Generate_data_C2C_host(FFT_size.input_nElements, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -1051,7 +1057,7 @@ int cuFFT_1D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	return(0);
 }
 
-int cuFFT_1D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1067,7 +1073,7 @@ int cuFFT_1D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	//---------> Memory
 	FFT_Memory<double> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements);
+	FFT_mem.Generate_data_R2C_host(FFT_size.input_nElements, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -1106,7 +1112,7 @@ int cuFFT_1D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	return(0);
 }
 
-int cuFFT_1D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_1D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1122,7 +1128,7 @@ int cuFFT_1D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	//---------> Memory
 	FFT_Memory<double> FFT_mem;
 	FFT_mem.Allocate(FFT_size.total_input_FFT_size, FFT_size.total_output_FFT_size, FFT_conf.FFT_host_to_device, FFT_conf.FFT_inplace);
-	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements);
+	FFT_mem.Generate_data_C2R_host(FFT_size.input_nElements, signal_amplitude, noise_amplitude);
 	FFT_mem.Transfer_input(FFT_size.total_input_FFT_size, FFT_conf.FFT_host_to_device, &FFT_transfer_time);
 	
 	
@@ -1166,7 +1172,7 @@ int cuFFT_1D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 // ***********************************************************************************
 
 
-int cuFFT_2D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_2D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1226,7 +1232,7 @@ int cuFFT_2D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	return(0);
 }
 
-int cuFFT_2D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_2D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1286,7 +1292,7 @@ int cuFFT_2D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	return(0);
 }
 
-int cuFFT_2D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_2D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1347,7 +1353,7 @@ int cuFFT_2D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 }
 
 
-int cuFFT_2D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_2D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1407,7 +1413,7 @@ int cuFFT_2D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	return(0);
 }
 
-int cuFFT_2D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_2D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1467,7 +1473,7 @@ int cuFFT_2D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	return(0);
 }
 
-int cuFFT_2D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_2D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1533,7 +1539,7 @@ int cuFFT_2D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 // ***********************************************************************************
 
 
-int cuFFT_3D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_3D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1593,7 +1599,7 @@ int cuFFT_3D_C2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	return(0);
 }
 
-int cuFFT_3D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_3D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1653,7 +1659,7 @@ int cuFFT_3D_R2C_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 	return(0);
 }
 
-int cuFFT_3D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_3D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1714,7 +1720,7 @@ int cuFFT_3D_C2R_float(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int dev
 }
 
 
-int cuFFT_3D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_3D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1774,7 +1780,7 @@ int cuFFT_3D_C2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	return(0);
 }
 
-int cuFFT_3D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_3D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);
@@ -1834,7 +1840,7 @@ int cuFFT_3D_R2C_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int de
 	return(0);
 }
 
-int cuFFT_3D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time){
+int cuFFT_3D_C2R_double(FFT_Lengths FFT_lengths, size_t nFFTs, int nRuns, int device, FFT_Configuration FFT_conf, FFT_Sizes FFT_size, double *execution_time, double *standard_deviation, double *transfer_time, int signal_amplitude, int noise_amplitude){
 	int error;
 	//---------> Initial nVidia stuff
 	error = Initiate_device(device);

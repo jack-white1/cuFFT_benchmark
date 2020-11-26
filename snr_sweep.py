@@ -8,37 +8,54 @@ input_result = "result"
 length = "8192"
 datatypes = ["d","f","h","b"]
 
-
+numNoiseAmplitudes = 1
+repeatsPerSNR = 10
 
 
 listVals = dict.fromkeys(datatypes)
 absListVals = dict.fromkeys(datatypes)
 sumVals = dict.fromkeys(datatypes)
+peakValsDict = dict.fromkeys(datatypes)
 
 subprocess.run(["make"])
 
 for datatype in datatypes:
-	data_path = "data/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
-	if os.path.exists(data_path):
-  		os.remove(data_path)
-	executable = "cuFFT_benchmark.exe"
-	args = length + " 0 0 100 10 " + datatype + " C2C 0"
-	subprocess.run(["./"+executable,length,"0","0","100","10",datatype,"C2C","0"])
+	noise_amplitude = 1
+	signal_amplitude = 1
+	peakVals = []
 
-	f = open(data_path, "r")
-	vals = []
-	absVals = []
-	for line in f:
-		pair = [float(i) for i in line.split()]
-		vals.append(pair)
-		absVals.append(math.sqrt(float(pair[0])**2 + float(pair[1])**2))
-	f.close()
-	#del(vals[:int(len(vals)/2)])
-	#del(absVals[:int(len(absVals)/2)])
-	listVals[datatype]= vals
-	absListVals[datatype] = absVals
-	print("peaks in precision " + datatype + ":" + str(scipy.signal.find_peaks(absVals, height=100)) + "\n")
-	sumVals[datatype] = sum(absVals)
+	for i in range(numNoiseAmplitudes):
+		data_path = "data/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
+		if os.path.exists(data_path):
+	  		os.remove(data_path)
+		executable = "cuFFT_benchmark.exe"
+		args = length + " 0 0 100 10 " + datatype + " C2C 0"
+		subprocess.run(["./"+executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_amplitude),str(noise_amplitude)])
+
+		f = open(data_path, "r")
+		vals = []
+		absVals = []
+
+		for line in f:
+			pair = [float(i) for i in line.split()]
+			vals.append(pair)
+			absVals.append(math.sqrt(float(pair[0])**2 + float(pair[1])**2))
+		f.close()
+		del(vals[:int(len(vals)/2)])
+		del(absVals[:int(len(absVals)/2)])
+		listVals[datatype]= vals
+		absListVals[datatype] = absVals
+		max_value = max(absListVals[datatype])
+		max_index = absListVals[datatype].index(max_value)
+		peakVals.append(max_index)
+		print("max value at :", max_index)
+		#print("peaks in precision " + datatype + ":" + str(scipy.signal.find_peaks(absVals, height=100)) + "\n")
+		sumVals[datatype] = sum(absVals)
+
+		noise_amplitude += 1
+
+	peakValsDict[datatype] = peakVals
+
 
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 
@@ -72,8 +89,16 @@ axs[1, 1].set_title('Bfloat16')
 plt.show()
 
 '''
->clear existing data files
->run each executable
->find peaks, store their location and height
->visualise output, maybe labelling peaks
+{
+	"double" 	: {
+		"signal_amplitude" : {
+			"noise_amplitude" : {
+				"peak_locations" : [3072,3072,3072,3072]
+			}
+		}
+	},
+	"single" 	: {},
+	"half"		: {},
+	"bfloat16"	: {},
+}
 '''
