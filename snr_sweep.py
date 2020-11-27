@@ -8,8 +8,8 @@ input_result = "result"
 length = "8192"
 datatypes = ["d","f","h","b"]
 
-numNoiseAmplitudes = 1
-repeatsPerSNR = 10
+numNoiseAmplitudes = 3
+repeatsPerSNR = 2
 
 
 listVals = dict.fromkeys(datatypes)
@@ -22,40 +22,41 @@ subprocess.run(["make"])
 for datatype in datatypes:
 	noise_amplitude = 1
 	signal_amplitude = 1
-	peakVals = []
+	peakValsDict[datatype] = {}
 
 	for i in range(numNoiseAmplitudes):
-		data_path = "data/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
-		if os.path.exists(data_path):
-	  		os.remove(data_path)
-		executable = "cuFFT_benchmark.exe"
-		args = length + " 0 0 100 10 " + datatype + " C2C 0"
-		subprocess.run(["./"+executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_amplitude),str(noise_amplitude)])
+		peakValsDict[datatype][noise_amplitude] = []
+		for j in range(repeatsPerSNR):
+			data_path = "data/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
+			if os.path.exists(data_path):
+		  		os.remove(data_path)
+			executable = "cuFFT_benchmark.exe"
+			args = length + " 0 0 100 10 " + datatype + " C2C 0"
+			subprocess.run(["./"+executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_amplitude),str(noise_amplitude)])
 
-		f = open(data_path, "r")
-		vals = []
-		absVals = []
+			f = open(data_path, "r")
+			vals = []
+			absVals = []
 
-		for line in f:
-			pair = [float(i) for i in line.split()]
-			vals.append(pair)
-			absVals.append(math.sqrt(float(pair[0])**2 + float(pair[1])**2))
-		f.close()
-		del(vals[:int(len(vals)/2)])
-		del(absVals[:int(len(absVals)/2)])
-		listVals[datatype]= vals
-		absListVals[datatype] = absVals
-		max_value = max(absListVals[datatype])
-		max_index = absListVals[datatype].index(max_value)
-		peakVals.append(max_index)
-		print("max value at :", max_index)
+			for line in f:
+				pair = [float(i) for i in line.split()]
+				vals.append(pair)
+				absVals.append(math.sqrt(float(pair[0])**2 + float(pair[1])**2))
+			f.close()
+			del(vals[:int(len(vals)/2)])
+			del(absVals[:int(len(absVals)/2)])
+			listVals[datatype]= vals
+			absListVals[datatype] = absVals
+			max_value = max(absListVals[datatype])
+			max_index = absListVals[datatype].index(max_value)
+			peakValsDict[datatype][noise_amplitude].append(max_index)
+			#print("max value at :", max_index)
 		#print("peaks in precision " + datatype + ":" + str(scipy.signal.find_peaks(absVals, height=100)) + "\n")
 		sumVals[datatype] = sum(absVals)
 
 		noise_amplitude += 1
 
-	peakValsDict[datatype] = peakVals
-
+print(peakValsDict)
 
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 
