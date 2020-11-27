@@ -41,7 +41,7 @@ public:
 		//return a1*sin(2.0*3.141592654*f1*f) + a2*sin(2.0*3.141592654*f2*f) + 0.1245*a1*sin(2.0*3.141592654*0.354245*f1*f) + 0.5487*a2*sin(2.0*3.141592654*0.1124457*f2*f) + (3.0*3.141592654)/4.0;
 		std::random_device rand_dev;
 		std::mt19937 generator(rand_dev());
-		std::normal_distribution<double> distribution(0.0,(float)n1);
+		std::normal_distribution<double> distribution(0.0,n1);
 		return (distribution(generator)) + a1*sin(2.0*3.141592654*f1*f);
 	}
 
