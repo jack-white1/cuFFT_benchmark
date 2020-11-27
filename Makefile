@@ -24,14 +24,14 @@ endif
 all: clean analyze
 
 analyze: cuFFT_benchmark.o cuFFT.o Makefile
-	$(NVCC) -o $(ANALYZE) cuFFT_benchmark.o cuFFT.o $(LIB) $(NVCCFLAGS) -DEXPORT=1
+	$(NVCC) -o $(ANALYZE) cuFFT_benchmark.o cuFFT.o $(LIB) $(NVCCFLAGS)
 
 cuFFT.o: timer.h utils_cuda.h FFT_clases.h
-	$(NVCC) -c cuFFT.cu $(NVCCFLAGS) -DEXPORT=1
+	$(NVCC) -c cuFFT.cu $(NVCCFLAGS)
 	
 cuFFT_benchmark.o: cuFFT_benchmark.cpp
-	$(GCC) -c cuFFT_benchmark.cpp $(GCC_OPTS) -DEXPORT=1
-
+	$(GCC) -c cuFFT_benchmark.cpp $(GCC_OPTS)
+	
 clean:	
 	rm -f *.o *.~ $(ANALYZE)
 

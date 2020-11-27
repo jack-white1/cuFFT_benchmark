@@ -8,9 +8,12 @@ input_result = "result"
 length = "8192"
 datatypes = ["d","f","h","b"]
 
-numNoiseAmplitudes = 3
-repeatsPerSNR = 2
+numNoiseAmplitudes = 100
+repeatsPerSNR = 1
 
+starting_noise_stdev = 1.0
+starting_signal_amplitude = 1.0
+noise_stdev_step = 1.0
 
 listVals = dict.fromkeys(datatypes)
 absListVals = dict.fromkeys(datatypes)
@@ -20,19 +23,19 @@ peakValsDict = dict.fromkeys(datatypes)
 subprocess.run(["make"])
 
 for datatype in datatypes:
-	noise_amplitude = 1
-	signal_amplitude = 1
+	noise_stdev = starting_noise_stdev
+	signal_amplitude = starting_signal_amplitude
 	peakValsDict[datatype] = {}
 
 	for i in range(numNoiseAmplitudes):
-		peakValsDict[datatype][noise_amplitude] = []
+		peakValsDict[datatype][noise_stdev] = []
 		for j in range(repeatsPerSNR):
 			data_path = "data/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
 			if os.path.exists(data_path):
 		  		os.remove(data_path)
 			executable = "cuFFT_benchmark.exe"
 			args = length + " 0 0 100 10 " + datatype + " C2C 0"
-			subprocess.run(["./"+executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_amplitude),str(noise_amplitude)])
+			subprocess.run(["./"+executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_amplitude),str(noise_stdev)])
 
 			f = open(data_path, "r")
 			vals = []
@@ -49,15 +52,15 @@ for datatype in datatypes:
 			absListVals[datatype] = absVals
 			max_value = max(absListVals[datatype])
 			max_index = absListVals[datatype].index(max_value)
-			peakValsDict[datatype][noise_amplitude].append(max_index)
+			peakValsDict[datatype][noise_stdev].append(max_index)
 			#print("max value at :", max_index)
 		#print("peaks in precision " + datatype + ":" + str(scipy.signal.find_peaks(absVals, height=100)) + "\n")
 		sumVals[datatype] = sum(absVals)
 
-		noise_amplitude += 1
+		noise_stdev += noise_stdev_step
 
 print(peakValsDict)
-
+'''
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 
 fig, axs = plt.subplots(2,2)
@@ -73,7 +76,7 @@ axs[1,0].text(0.25, 0.95, "Area under graph: "+str(sumVals["h"]), transform=axs[
 axs[1, 1].plot(absListVals["b"])
 axs[1, 1].set_title('Bfloat16')
 axs[1,1].text(0.25, 0.95, "Area under graph: "+str(sumVals["b"]), transform=axs[1,1].transAxes, fontsize=10,verticalalignment='top', bbox=props)
-
+'''
 
 '''
 fig, axs = plt.subplots(2,2)
@@ -93,7 +96,7 @@ plt.show()
 {
 	"double" 	: {
 		"signal_amplitude" : {
-			"noise_amplitude" : {
+			"noise_stdev" : {
 				"peak_locations" : [3072,3072,3072,3072]
 			}
 		}

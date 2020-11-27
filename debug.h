@@ -4,4 +4,4 @@
 #define VERBOSE true
 
 #define HOST_TO_DEVICE 1
-#define EXPORTs
+#define EXPORT
