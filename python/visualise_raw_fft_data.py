@@ -8,8 +8,10 @@ input_result = "result"
 length = "8192"
 datatypes = ["d","f","h","b"]
 
+signal_amplitude = 1.0
+noise_stdev = 1.0
 
-
+current_working_directory = os.getcwd()
 
 listVals = dict.fromkeys(datatypes)
 absListVals = dict.fromkeys(datatypes)
@@ -18,12 +20,12 @@ sumVals = dict.fromkeys(datatypes)
 subprocess.run(["make"])
 
 for datatype in datatypes:
-	data_path = "data/dat_files/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
+	data_path = current_working_directory+"/data/dat_files/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
 	if os.path.exists(data_path):
   		os.remove(data_path)
-	executable = "../cuFFT_benchmark.exe"
+	executable = current_working_directory+ "/cuFFT_benchmark"
 	args = length + " 0 0 100 10 " + datatype + " C2C 0"
-	subprocess.run(["../"+executable,length,"0","0","100","10",datatype,"C2C","0"])
+	subprocess.run([executable,length,"0","0","100","10",datatype,"C2C","0",str(signal_amplitude),str(noise_stdev)])
 
 	f = open(data_path, "r")
 	vals = []

@@ -9,15 +9,14 @@ input_result = "result"
 length = "8192"
 datatypes = ["d","f","h","b"]
 
-current_working_directory = d = os.getcwd()
-print(current_working_directory)
+current_working_directory = os.getcwd()
 
-numNoiseAmplitudes = 1
+numNoiseAmplitudes = 10
 repeatsPerSNR = 1
 
 starting_noise_stdev = 1.0
 starting_signal_amplitude = 1.0
-noise_stdev_step = 1.0
+noise_stdev_step = 0.5
 
 listVals = dict.fromkeys(datatypes)
 absListVals = dict.fromkeys(datatypes)
