@@ -3,13 +3,14 @@ import math
 import os
 import subprocess
 import scipy.signal
+import json
 
 input_result = "result"
 length = "8192"
 datatypes = ["d","f","h","b"]
 
 numNoiseAmplitudes = 100
-repeatsPerSNR = 1
+repeatsPerSNR = 10
 
 starting_noise_stdev = 1.0
 starting_signal_amplitude = 1.0
@@ -58,6 +59,9 @@ for datatype in datatypes:
 		sumVals[datatype] = sum(absVals)
 
 		noise_stdev += noise_stdev_step
+
+with open('data.json', 'w') as fp:
+    json.dump(peakValsDict, fp)
 
 print(peakValsDict)
 '''
