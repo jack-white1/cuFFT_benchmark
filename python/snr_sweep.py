@@ -9,8 +9,11 @@ input_result = "result"
 length = "8192"
 datatypes = ["d","f","h","b"]
 
-numNoiseAmplitudes = 100
-repeatsPerSNR = 10
+current_working_directory = d = os.getcwd()
+print(current_working_directory)
+
+numNoiseAmplitudes = 1
+repeatsPerSNR = 1
 
 starting_noise_stdev = 1.0
 starting_signal_amplitude = 1.0
@@ -31,12 +34,12 @@ for datatype in datatypes:
 	for i in range(numNoiseAmplitudes):
 		peakValsDict[datatype][noise_stdev] = []
 		for j in range(repeatsPerSNR):
-			data_path = "data/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
+			data_path = current_working_directory+"/data/dat_files/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
 			if os.path.exists(data_path):
 		  		os.remove(data_path)
-			executable = "cuFFT_benchmark.exe"
+			executable = current_working_directory + "/cuFFT_benchmark"
 			args = length + " 0 0 100 10 " + datatype + " C2C 0"
-			subprocess.run(["./"+executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_amplitude),str(noise_stdev)])
+			subprocess.run([executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_amplitude),str(noise_stdev)])
 
 			f = open(data_path, "r")
 			vals = []
@@ -60,7 +63,7 @@ for datatype in datatypes:
 
 		noise_stdev += noise_stdev_step
 
-with open('data.json', 'w') as fp:
+with open(current_working_directory + '/data/processed_json/data.json', 'w') as fp:
     json.dump(peakValsDict, fp)
 
 print(peakValsDict)

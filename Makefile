@@ -10,7 +10,7 @@ NVCCFLAGS = -O3 -arch=sm_86 --ptxas-options=-v -Xcompiler -Wextra -lineinfo
 
 GCC_OPTS =-O3 -Wall -Wextra $(INC)
 
-ANALYZE = cuFFT_benchmark.exe
+ANALYZE = cuFFT_benchmark
 
 
 ifdef reglim

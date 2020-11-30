@@ -18,12 +18,12 @@ sumVals = dict.fromkeys(datatypes)
 subprocess.run(["make"])
 
 for datatype in datatypes:
-	data_path = "data/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
+	data_path = "data/dat_files/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
 	if os.path.exists(data_path):
   		os.remove(data_path)
-	executable = "cuFFT_benchmark.exe"
+	executable = "../cuFFT_benchmark.exe"
 	args = length + " 0 0 100 10 " + datatype + " C2C 0"
-	subprocess.run(["./"+executable,length,"0","0","100","10",datatype,"C2C","0"])
+	subprocess.run(["../"+executable,length,"0","0","100","10",datatype,"C2C","0"])
 
 	f = open(data_path, "r")
 	vals = []
