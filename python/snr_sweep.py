@@ -11,8 +11,8 @@ datatypes = ["d","f","h","b"]
 
 current_working_directory = os.getcwd()
 
-numNoiseAmplitudes = 1
-repeatsPerSNR = 1
+numNoiseAmplitudes = 100
+repeatsPerSNR = 200
 
 starting_noise_stdev = 1.0
 starting_signal_amplitude = 1.0
