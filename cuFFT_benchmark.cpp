@@ -77,8 +77,8 @@ int main(int argc, char* argv[]) {
 		printf("Select FFT type complex-to-complex \"C2C\"; real-to-complex \"R2C\"; complex-to-real \"C2R\"\n");
 		printf("7) FFT type\n");
 		printf("8) Device id\n");
-		printf("9) Signal amplitude (relative integer units)\n");
-		printf("10) Noise amplitude (relative integer units)\n");
+		printf("9) Signal amplitude\n");
+		printf("10) Noise amplitude\n");
         return (1);
     }
 	char * pEnd;

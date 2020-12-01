@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 current_working_directory = os.getcwd()
 datatypes = ["d","f","h","b"]
 
-with open(current_working_directory + '/data/processed_json/sweep_data.json', 'r') as fp:
+with open(current_working_directory + '/data/processed_json/data.json', 'r') as fp:
     sweep_data = json.load(fp)
 
 result = dict.fromkeys(datatypes)
