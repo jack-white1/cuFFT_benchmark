@@ -20,15 +20,13 @@ for datatype in datatypes:
 				counter +=1
 		result[datatype][noise_stdev] = counter
 
-print(result['b'])
-
-
-plt.xticks([int(float(j)) for j in result['b'].keys()], rotation='vertical')
+plt.xticks(rotation='vertical')
 plt.xlabel("Noise stdev")
 plt.plot(result['b'].keys(),result['b'].values(), color='red')
 plt.plot(result['h'].keys(),result['h'].values(), color='blue')
 plt.plot(result['f'].keys(),result['f'].values(), color='green')
 plt.plot(result['d'].keys(),result['d'].values(), color='purple')
+plt.legend(['bfloat16','half','float','double'])
 plt.show()
 
 

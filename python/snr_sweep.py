@@ -11,11 +11,12 @@ datatypes = ["d","f","h","b"]
 
 current_working_directory = os.getcwd()
 
-numNoiseAmplitudes = 100
-repeatsPerSNR = 200
+numNoiseAmplitudes = 1
+repeatsPerSNR = 1
 
 starting_noise_stdev = 1.0
-starting_signal_amplitude = 1.0
+starting_signal_A_amplitude = 1.0
+starting_signal_B_amplitude = 1.0
 noise_stdev_step = 0.5
 
 listVals = dict.fromkeys(datatypes)
@@ -27,7 +28,8 @@ subprocess.run(["make"])
 
 for datatype in datatypes:
 	noise_stdev = starting_noise_stdev
-	signal_amplitude = starting_signal_amplitude
+	signal_A_amplitude = starting_signal_A_amplitude
+	signal_B_amplitude = starting_signal_B_amplitude
 	peakValsDict[datatype] = {}
 
 	for i in range(numNoiseAmplitudes):
@@ -38,7 +40,7 @@ for datatype in datatypes:
 		  		os.remove(data_path)
 			executable = current_working_directory + "/cuFFT_benchmark"
 			args = length + " 0 0 100 10 " + datatype + " C2C 0"
-			subprocess.run([executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_amplitude),str(noise_stdev)])
+			subprocess.run([executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_A_amplitude),str(signal_B_amplitude),str(noise_stdev)])
 
 			f = open(data_path, "r")
 			vals = []
@@ -66,6 +68,7 @@ with open(current_working_directory + '/data/processed_json/data.json', 'w') as 
     json.dump(peakValsDict, fp)
 
 print(peakValsDict)
+
 '''
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 
@@ -94,21 +97,8 @@ axs[1, 0].plot(listVals["h"])
 axs[1, 0].set_title('Half')
 axs[1, 1].plot(listVals["b"])
 axs[1, 1].set_title('Bfloat16')
-'''
+
 
 plt.show()
 
-'''
-{
-	"double" 	: {
-		"signal_amplitude" : {
-			"noise_stdev" : {
-				"peak_locations" : [3072,3072,3072,3072]
-			}
-		}
-	},
-	"single" 	: {},
-	"half"		: {},
-	"bfloat16"	: {},
-}
 '''

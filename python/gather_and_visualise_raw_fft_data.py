@@ -22,7 +22,13 @@ sumVals = dict.fromkeys(datatypes)
 subprocess.run(["make"])
 
 for datatype in datatypes:
-	data_path = current_working_directory+"/data/dat_files/fft_"+input_result+"_"+length+"_1_1_"+ "{:e}".format(signal_A_amplitude) + "_" +  "{:e}".format(signal_B_amplitude) +"_"+ "{:e}".format(noise_stdev)+"_"+datatype+"_C2C.dat"
+	data_path = current_working_directory+"/data/dat_files/fft_"+input_result+"_"+length+"_1_1_"+datatype+"_C2C.dat"
+	if os.path.exists(data_path):
+  		os.remove(data_path)
+	executable = current_working_directory+ "/cuFFT_benchmark"
+	args = length + " 0 0 100 10 " + datatype + " C2C 0"
+	subprocess.run([executable,length,"0","0","1","1",datatype,"C2C","0",str(signal_A_amplitude),str(signal_B_amplitude),str(noise_stdev)])
+
 	f = open(data_path, "r")
 	vals = []
 	absVals = []
